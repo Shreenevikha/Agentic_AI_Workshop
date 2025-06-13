@@ -2,4 +2,4 @@
 
 2.install this libraries --> pip install --user chromadb PyMuPDF google-generativeai python-dotenv tqdm sentence-transformers
 
-3. Add the Required PDF Files in the Pdf_files -->folder
+ Add the Required PDF Files in the Pdf_files -->folder
