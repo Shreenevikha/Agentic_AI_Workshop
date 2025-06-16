@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vendor Risk Analyzer</title>
+    <style>
+        /* Base styles */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #f3f4f6;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+        .bg-white {
+            background-color: white;
+        }
+        .rounded-lg {
+            border-radius: 0.5rem;
+        }
+        .shadow-lg {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .p-6 {
+            padding: 1.5rem;
+        }
+        .mb-4 {
+            margin-bottom: 1rem;
+        }
+        .mb-8 {
+            margin-bottom: 2rem;
+        }
+        .mb-12 {
+            margin-bottom: 3rem;
+        }
+        .mt-4 {
+            margin-top: 1rem;
+        }
+        .mt-8 {
+            margin-top: 2rem;
+        }
+        .text-center {
+            text-align: center;
+        }
+        .text-gray-600 {
+            color: #4b5563;
+        }
+        .text-gray-800 {
+            color: #1f2937;
+        }
+        .text-blue-600 {
+            color: #2563eb;
+        }
+        .text-4xl {
+            font-size: 2.25rem;
+        }
+        .text-2xl {
+            font-size: 1.5rem;
+        }
+        .font-bold {
+            font-weight: 700;
+        }
+        .font-semibold {
+            font-weight: 600;
+        }
+        .grid {
+            display: grid;
+        }
+        .grid-cols-1 {
+            grid-template-columns: repeat(1, minmax(0, 1fr));
+        }
+        .gap-8 {
+            gap: 2rem;
+        }
+        .space-y-4 > * + * {
+            margin-top: 1rem;
+        }
+        .space-y-2 > * + * {
+            margin-top: 0.5rem;
+        }
+        .w-full {
+            width: 100%;
+        }
+        .px-4 {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+        .py-2 {
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+        }
+        .py-8 {
+            padding-top: 2rem;
+            padding-bottom: 2rem;
+        }
+        .border {
+            border-width: 1px;
+        }
+        .border-2 {
+            border-width: 2px;
+        }
+        .border-dashed {
+            border-style: dashed;
+        }
+        .border-gray-300 {
+            border-color: #d1d5db;
+        }
+        .rounded-lg {
+            border-radius: 0.5rem;
+        }
+        .focus\:outline-none:focus {
+            outline: 2px solid transparent;
+            outline-offset: 2px;
+        }
+        .focus\:border-blue-500:focus {
+            border-color: #3b82f6;
+        }
+        .bg-blue-600 {
+            background-color: #2563eb;
+        }
+        .hover\:bg-blue-700:hover {
+            background-color: #1d4ed8;
+        }
+        .text-white {
+            color: white;
+        }
+        .transition {
+            transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform;
+            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+            transition-duration: 150ms;
+        }
+        .duration-200 {
+            transition-duration: 200ms;
+        }
+        .hidden {
+            display: none;
+        }
+        .cursor-pointer {
+            cursor: pointer;
+        }
+        .mx-auto {
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .h-12 {
+            height: 3rem;
+        }
+        .w-12 {
+            width: 3rem;
+        }
+        .text-gray-400 {
+            color: #9ca3af;
+        }
+        .text-sm {
+            font-size: 0.875rem;
+        }
+        .text-gray-500 {
+            color: #6b7280;
+        }
+        .list-disc {
+            list-style-type: disc;
+        }
+        .list-inside {
+            list-style-position: inside;
+        }
+        .space-y-6 > * + * {
+            margin-top: 1.5rem;
+        }
+        .text-lg {
+            font-size: 1.125rem;
+        }
+        .text-6xl {
+            font-size: 3.75rem;
+        }
+
+        /* Custom styles */
+        .drag-over {
+            border-color: #3B82F6 !important;
+            background-color: #EBF5FF;
+        }
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .risk-low { color: #10B981; }
+        .risk-medium { color: #F59E0B; }
+        .risk-high { color: #EF4444; }
+        .file-preview {
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            background-color: #F3F4F6;
+            border-radius: 4px;
+            margin-top: 8px;
+        }
+        .file-preview .file-name {
+            flex-grow: 1;
+            margin-left: 8px;
+            word-break: break-all;
+        }
+        .file-preview .remove-file {
+            color: #EF4444;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+        .file-preview .remove-file:hover {
+            background-color: #FEE2E2;
+        }
+        .error-message {
+            color: #EF4444;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+        .success-message {
+            color: #10B981;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+        .process-step {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            background-color: #F3F4F6;
+        }
+        .process-step.active {
+            background-color: #EFF6FF;
+            border-left: 4px solid #3B82F6;
+        }
+        .process-step.completed {
+            background-color: #F0FDF4;
+            border-left: 4px solid #10B981;
+        }
+        .process-step .step-icon {
+            width: 2rem;
+            height: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 9999px;
+            margin-right: 1rem;
+            background-color: #E5E7EB;
+        }
+        .process-step.active .step-icon {
+            background-color: #DBEAFE;
+            color: #3B82F6;
+        }
+        .process-step.completed .step-icon {
+            background-color: #D1FAE5;
+            color: #10B981;
+        }
+
+        /* Responsive styles */
+        @media (min-width: 768px) {
+            .md\:grid-cols-2 {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-blue-600 mb-2">Vendor Risk Analyzer</h1>
+            <p class="text-gray-600">Advanced document analysis with RAG and OCR capabilities</p>
+        </header>
+
+        <!-- Process Steps -->
+        <div class="mb-8 bg-white rounded-lg shadow-lg p-6">
+            <h2 class="text-2xl font-semibold mb-4 text-gray-800">Analysis Process</h2>
+            <div id="processSteps" class="space-y-2">
+                <div class="process-step" id="step1">
+                    <div class="step-icon">1</div>
+                    <div>
+                        <h3 class="font-semibold">Input Documents</h3>
+                        <p class="text-sm text-gray-600">Upload vendor documents for analysis</p>
+                    </div>
+                </div>
+                <div class="process-step" id="step2">
+                    <div class="step-icon">2</div>
+                    <div>
+                        <h3 class="font-semibold">Document Processing</h3>
+                        <p class="text-sm text-gray-600">OCR and text extraction from documents</p>
+                    </div>
+                </div>
+                <div class="process-step" id="step3">
+                    <div class="step-icon">3</div>
+                    <div>
+                        <h3 class="font-semibold">Risk Analysis</h3>
+                        <p class="text-sm text-gray-600">Analyzing extracted data for risks</p>
+                    </div>
+                </div>
+                <div class="process-step" id="step4">
+                    <div class="step-icon">4</div>
+                    <div>
+                        <h3 class="font-semibold">Data Enrichment</h3>
+                        <p class="text-sm text-gray-600">Enhancing data with external sources</p>
+                    </div>
+                </div>
+                <div class="process-step" id="step5">
+                    <div class="step-icon">5</div>
+                    <div>
+                        <h3 class="font-semibold">Scoring</h3>
+                        <p class="text-sm text-gray-600">Calculating risk scores</p>
+                    </div>
+                </div>
+                <div class="process-step" id="step6">
+                    <div class="step-icon">6</div>
+                    <div>
+                        <h3 class="font-semibold">Report Generation</h3>
+                        <p class="text-sm text-gray-600">Creating detailed analysis report</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <!-- Upload Section -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h2 class="text-2xl font-semibold mb-4 text-gray-800">Upload Documents</h2>
+                <form id="uploadForm" class="space-y-4" onsubmit="return false;">
+                    <div>
+                        <label class="block text-gray-700 mb-2">Vendor Name</label>
+                        <input type="text" id="vendorName" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500" required>
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 mb-2">GSTIN Number</label>
+                        <input type="text" id="gstin" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500" required>
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 mb-2">Upload Documents</label>
+                        <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                            <input type="file" id="documents" multiple class="hidden" accept=".pdf,.doc,.docx">
+                            <label for="documents" class="cursor-pointer">
+                                <div class="text-gray-600">
+                                    <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                                        <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                    <p class="mt-1">Click to upload or drag and drop</p>
+                                    <p class="text-sm text-gray-500">PDF, DOC, or DOCX files</p>
+                                </div>
+                            </label>
+                            <div id="fileList" class="mt-4 space-y-2"></div>
+                            <div id="uploadError" class="error-message"></div>
+                            <div id="uploadSuccess" class="success-message"></div>
+                        </div>
+                    </div>
+                    <button type="button" id="analyzeButton" class="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-200">
+                        Start Analysis
+                    </button>
+                </form>
+            </div>
+
+            <!-- Results Section -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h2 class="text-2xl font-semibold mb-4 text-gray-800">Analysis Results</h2>
+                <div id="results" class="space-y-4">
+                    <div class="text-center text-gray-500 py-8">
+                        Upload documents to see analysis results
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Risk Score Display -->
+        <div id="riskScore" class="mt-8 bg-white rounded-lg shadow-lg p-6 hidden">
+            <h2 class="text-2xl font-semibold mb-4 text-gray-800">Risk Assessment</h2>
+            <div class="flex items-center justify-center">
+                <div class="text-center">
+                    <div class="text-6xl font-bold text-blue-600 mb-2" id="scoreValue">0</div>
+                    <div class="text-gray-600" id="scoreLabel">Risk Score</div>
+                </div>
+            </div>
+            <div class="mt-6">
+                <h3 class="text-xl font-semibold mb-2 text-gray-800">Risk Factors</h3>
+                <ul id="riskFactors" class="list-disc list-inside space-y-2 text-gray-600">
+                </ul>
+            </div>
+        </div>
+
+        <!-- Detailed Report -->
+        <div id="detailedReport" class="mt-8 bg-white rounded-lg shadow-lg p-6 hidden">
+            <h2 class="text-2xl font-semibold mb-4 text-gray-800">Detailed Analysis Report</h2>
+            <div class="space-y-6">
+                <div>
+                    <h3 class="text-lg font-semibold mb-2">Document Analysis</h3>
+                    <div id="documentAnalysis" class="text-gray-600"></div>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-2">Data Enrichment Results</h3>
+                    <div id="enrichmentResults" class="text-gray-600"></div>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-2">Recommendations</h3>
+                    <div id="recommendations" class="text-gray-600"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const uploadForm = document.getElementById('uploadForm');
+            const fileInput = document.getElementById('documents');
+            const fileList = document.getElementById('fileList');
+            const uploadError = document.getElementById('uploadError');
+            const uploadSuccess = document.getElementById('uploadSuccess');
+            const resultsDiv = document.getElementById('results');
+            const riskScoreDiv = document.getElementById('riskScore');
+            const detailedReport = document.getElementById('detailedReport');
+            const scoreValue = document.getElementById('scoreValue');
+            const riskFactors = document.getElementById('riskFactors');
+            const analyzeButton = document.getElementById('analyzeButton');
+            const processSteps = document.querySelectorAll('.process-step');
+
+            // Handle file drag and drop
+            const dropZone = document.querySelector('.border-dashed');
+            
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, preventDefaults, false);
+            });
+
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropZone.addEventListener(eventName, highlight, false);
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, unhighlight, false);
+            });
+
+            function highlight(e) {
+                dropZone.classList.add('drag-over');
+            }
+
+            function unhighlight(e) {
+                dropZone.classList.remove('drag-over');
+            }
+
+            dropZone.addEventListener('drop', handleDrop, false);
+
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                handleFiles(files);
+            }
+
+            // Handle file selection
+            fileInput.addEventListener('change', (e) => {
+                handleFiles(e.target.files);
+            });
+
+            function handleFiles(files) {
+                uploadError.textContent = '';
+                uploadSuccess.textContent = '';
+
+                if (files.length === 0) return;
+
+                Array.from(files).forEach(file => {
+                    // Validate file type
+                    const validTypes = ['.pdf', '.doc', '.docx'];
+                    const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
+                    
+                    if (!validTypes.includes(fileExtension)) {
+                        uploadError.textContent = `Invalid file type: ${file.name}. Please upload PDF, DOC, or DOCX files only.`;
+                        return;
+                    }
+
+                    // Validate file size (10MB limit)
+                    if (file.size > 10 * 1024 * 1024) {
+                        uploadError.textContent = `File too large: ${file.name}. Maximum size is 10MB.`;
+                        return;
+                    }
+
+                    const filePreview = document.createElement('div');
+                    filePreview.className = 'file-preview';
+                    filePreview.innerHTML = `
+                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                        </svg>
+                        <span class="file-name">${file.name}</span>
+                        <button type="button" class="remove-file" onclick="this.parentElement.remove()">×</button>
+                    `;
+                    fileList.appendChild(filePreview);
+                });
+
+                if (fileList.children.length > 0) {
+                    uploadSuccess.textContent = `${fileList.children.length} file(s) uploaded successfully`;
+                }
+            }
+
+            // Handle analyze button click
+            analyzeButton.addEventListener('click', async () => {
+                const vendorName = document.getElementById('vendorName').value;
+                const gstin = document.getElementById('gstin').value;
+
+                if (!vendorName || !gstin) {
+                    uploadError.textContent = 'Please fill in all required fields.';
+                    return;
+                }
+
+                if (fileList.children.length === 0) {
+                    uploadError.textContent = 'Please upload at least one document.';
+                    return;
+                }
+
+                // Reset process steps
+                processSteps.forEach(step => {
+                    step.classList.remove('active', 'completed');
+                });
+
+                // Start analysis process
+                processSteps[0].classList.add('active');
+                
+                // Show loading state
+                resultsDiv.innerHTML = `
+                    <div class="text-center py-8">
+                        <div class="loading mx-auto mb-4"></div>
+                        <p class="text-gray-600">Starting document analysis...</p>
+                    </div>
+                `;
+
+                // Simulate the analysis process
+                simulateAnalysisProcess();
+            });
+
+            function simulateAnalysisProcess() {
+                // Step 1: Document Processing (OCR)
+                setTimeout(() => {
+                    processSteps[0].classList.remove('active');
+                    processSteps[0].classList.add('completed');
+                    processSteps[1].classList.add('active');
+                    resultsDiv.innerHTML = `
+                        <div class="text-center py-8">
+                            <div class="loading mx-auto mb-4"></div>
+                            <p class="text-gray-600">Processing documents with OCR...</p>
+                        </div>
+                    `;
+                }, 2000);
+
+                // Step 2: Risk Analysis
+                setTimeout(() => {
+                    processSteps[1].classList.remove('active');
+                    processSteps[1].classList.add('completed');
+                    processSteps[2].classList.add('active');
+                    resultsDiv.innerHTML = `
+                        <div class="text-center py-8">
+                            <div class="loading mx-auto mb-4"></div>
+                            <p class="text-gray-600">Analyzing risks in documents...</p>
+                        </div>
+                    `;
+                }, 4000);
+
+                // Step 3: Data Enrichment
+                setTimeout(() => {
+                    processSteps[2].classList.remove('active');
+                    processSteps[2].classList.add('completed');
+                    processSteps[3].classList.add('active');
+                    resultsDiv.innerHTML = `
+                        <div class="text-center py-8">
+                            <div class="loading mx-auto mb-4"></div>
+                            <p class="text-gray-600">Enriching data with external sources...</p>
+                        </div>
+                    `;
+                }, 6000);
+
+                // Step 4: Scoring
+                setTimeout(() => {
+                    processSteps[3].classList.remove('active');
+                    processSteps[3].classList.add('completed');
+                    processSteps[4].classList.add('active');
+                    resultsDiv.innerHTML = `
+                        <div class="text-center py-8">
+                            <div class="loading mx-auto mb-4"></div>
+                            <p class="text-gray-600">Calculating risk scores...</p>
+                        </div>
+                    `;
+                }, 8000);
+
+                // Step 5: Report Generation
+                setTimeout(() => {
+                    processSteps[4].classList.remove('active');
+                    processSteps[4].classList.add('completed');
+                    processSteps[5].classList.add('active');
+                    resultsDiv.innerHTML = `
+                        <div class="text-center py-8">
+                            <div class="loading mx-auto mb-4"></div>
+                            <p class="text-gray-600">Generating detailed report...</p>
+                        </div>
+                    `;
+                }, 10000);
+
+                // Final Results
+                setTimeout(() => {
+                    processSteps[5].classList.remove('active');
+                    processSteps[5].classList.add('completed');
+
+                    // Update results
+                    resultsDiv.innerHTML = `
+                        <div class="space-y-4">
+                            <div class="p-4 bg-green-50 rounded-lg">
+                                <h3 class="font-semibold text-green-800">Analysis Complete</h3>
+                                <p class="text-green-600">Successfully analyzed ${fileList.children.length} document(s)</p>
+                            </div>
+                        </div>
+                    `;
+
+                    // Show risk score
+                    riskScoreDiv.classList.remove('hidden');
+                    scoreValue.textContent = '65';
+                    scoreValue.className = 'text-6xl font-bold mb-2 risk-medium';
+
+                    // Update risk factors
+                    riskFactors.innerHTML = `
+                        <li>Inconsistent billing patterns detected</li>
+                        <li>GSTIN validation required</li>
+                        <li>Payment history shows delays</li>
+                        <li>Document authenticity verification needed</li>
+                        <li>Compliance documentation incomplete</li>
+                    `;
+
+                    // Show detailed report
+                    detailedReport.classList.remove('hidden');
+                    document.getElementById('documentAnalysis').innerHTML = `
+                        <ul class="list-disc list-inside space-y-2">
+                            <li>Successfully processed 3 documents</li>
+                            <li>Extracted text from scanned documents</li>
+                            <li>Identified key financial information</li>
+                            <li>Validated document authenticity</li>
+                        </ul>
+                    `;
+                    document.getElementById('enrichmentResults').innerHTML = `
+                        <ul class="list-disc list-inside space-y-2">
+                            <li>Verified GSTIN status</li>
+                            <li>Checked company registration</li>
+                            <li>Analyzed payment history</li>
+                            <li>Reviewed compliance records</li>
+                        </ul>
+                    `;
+                    document.getElementById('recommendations').innerHTML = `
+                        <ul class="list-disc list-inside space-y-2">
+                            <li>Request additional financial statements</li>
+                            <li>Verify GSTIN with tax authorities</li>
+                            <li>Conduct detailed payment history review</li>
+                            <li>Schedule compliance audit</li>
+                        </ul>
+                    `;
+                }, 12000);
+            }
+        });
+    </script>
+</body>
+</html> 
