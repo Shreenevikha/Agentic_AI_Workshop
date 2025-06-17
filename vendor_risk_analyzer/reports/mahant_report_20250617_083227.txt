@@ -1,0 +1,16 @@
+Vendor Risk Analysis Report for mahant (GSTIN: 22AAAAA0000A1Z5).
+Analysis conducted on: 2025-06-17 08:32:27.
+
+Overall Credibility Score: 100.0 (Risk Level: LOW).
+
+Document Analysis: 1 document(s) were processed.
+  - pancard.jpg (Extracted Info: 4 categories)
+
+No significant risk factors identified.
+
+Risk Component Scores:
+  - Financial: 0 
+  - Compliance: 0 
+  - Legal: 0 
+  - Operational: 0 
+

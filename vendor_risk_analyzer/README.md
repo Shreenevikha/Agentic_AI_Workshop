@@ -1,88 +1,74 @@
 # Vendor Risk Analyzer
 
-A comprehensive solution for analyzing vendor risk using AI agents. This system helps finance teams evaluate vendors by analyzing documents, assessing risks, and providing a credibility score.
+An AI-powered system for evaluating vendor credibility and compliance risk using RAG and LangChain.
 
 ## Features
 
-- Document Analysis: Scans vendor invoices and contracts for key information
-- Risk Assessment: Evaluates financial and compliance risks
-- Data Enrichment: Gathers additional information from public sources
-- Credibility Scoring: Generates a comprehensive risk score for vendors
+- Document Analysis: Extracts key information from vendor documents
+- Risk Signal Detection: Identifies potential risks and anomalies
+- Credibility Scoring: Generates comprehensive risk assessments with justifications
 
 ## Setup
 
-1. Clone the repository:
-```bash
-git clone <repository-url>
-cd vendor_risk_analyzer
-```
-
-2. Create a virtual environment and activate it:
+1. Create a virtual environment:
 ```bash
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 ```
 
-3. Install dependencies:
+2. Install dependencies:
 ```bash
 pip install -r requirements.txt
 ```
 
-4. Create a `.env` file in the root directory with your OpenAI API key:
+3. Create a `.env` file in the project root with your OpenAI API key:
 ```
 OPENAI_API_KEY=your_api_key_here
 ```
 
 ## Usage
 
-1. Start the server:
+1. Place vendor documents in a directory accessible to the system.
+
+2. Run the analyzer:
 ```bash
-python src/main.py
+python main.py
 ```
 
-2. The API will be available at `http://localhost:8000`
+3. The system will:
+   - Analyze vendor documents
+   - Detect risk signals
+   - Generate a risk score and recommendations
 
-3. Use the `/analyze-vendor` endpoint to analyze vendor documents:
-```bash
-curl -X POST "http://localhost:8000/analyze-vendor" \
-     -H "accept: application/json" \
-     -H "Content-Type: multipart/form-data" \
-     -F "name=Vendor Name" \
-     -F "gstin=GSTIN123456789" \
-     -F "documents=@path/to/document1.pdf" \
-     -F "documents=@path/to/document2.pdf"
+## Project Structure
+
+```
+vendor_risk_analyzer/
+├── agents/
+│   ├── document_analysis_agent.py
+│   ├── risk_signal_agent.py
+│   └── credibility_agent.py
+├── config.py
+├── main.py
+├── requirements.txt
+└── README.md
 ```
 
-## API Endpoints
+## Configuration
 
-- `POST /analyze-vendor`: Analyze vendor documents and generate risk assessment
-- `GET /health`: Check API health status
+The system can be configured through `config.py`:
+- Risk thresholds
+- Required document fields
+- Risk signal weights
+- Vector store settings
 
-## Response Format
+## Requirements
 
-The `/analyze-vendor` endpoint returns a JSON response with the following structure:
-```json
-{
-    "name": "Vendor Name",
-    "gstin": "GSTIN123456789",
-    "risk_score": 75.5,
-    "risk_factors": [
-        "Inconsistent billing patterns",
-        "Expired GSTIN",
-        "Low credit score"
-    ],
-    "last_updated": "2024-01-01T12:00:00"
-}
-```
+- Python 3.8+
+- OpenAI API key
+- PDF processing capabilities
+- Sufficient storage for document vectorization
 
-## Contributing
+## Note
 
-1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a Pull Request
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details. 
+This system requires proper document formatting and access to vendor information. Ensure all documents are properly formatted and contain the necessary information for analysis. 

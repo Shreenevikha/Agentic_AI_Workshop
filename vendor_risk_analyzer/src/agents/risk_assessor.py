@@ -8,7 +8,8 @@ from src.models.vendor import Vendor
 class RiskAssessor:
     def __init__(self, google_api_key: str):
         self.llm = ChatGoogleGenerativeAI(
-            model="gemini-pro",
+            model="models/gemini-1.5-pro-latest"
+,
             google_api_key=google_api_key,
             temperature=0
         )

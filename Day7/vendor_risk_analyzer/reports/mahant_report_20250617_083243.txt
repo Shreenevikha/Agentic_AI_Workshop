@@ -1,0 +1,20 @@
+Vendor Risk Analysis Report for mahant (GSTIN: 22AAAAA0000A1Z5).
+Analysis conducted on: 2025-06-17 08:32:43.
+
+Overall Credibility Score: 68.0 (Risk Level: MEDIUM).
+
+Document Analysis: 1 document(s) were processed.
+  - Screenshot 2025-06-16 125950.png (Extracted Info: 4 categories)
+
+Identified Risk Factors:
+  - Category: financial, Severity: MEDIUM
+    Context: "shree.n.ihub@snsgroups.com Net 30 & 9080856291 0 9080856291 Send Email Payables ADDRESS A CURRENCY O..."
+  - Category: financial, Severity: HIGH
+    Context: "yed in the organization's base currency. Last 6 Months> — Accrual ~ OTHER DETAILS. a 160K 140K 120K ..."
+
+Risk Component Scores:
+  - Financial: 8 
+  - Compliance: 0 
+  - Legal: 0 
+  - Operational: 0 
+
