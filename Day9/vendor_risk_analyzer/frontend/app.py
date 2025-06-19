@@ -44,8 +44,51 @@ if uploaded_file:
                         st.success("No major risk signals detected.")
                 st.header("🌐 External Intelligence Agent")
                 with st.expander("Show External Intelligence"):
-                    for k, v in result["external_intelligence"].items():
-                        st.write(f"**{k}:** {v}")
+                    # Display basic intelligence info
+                    cols = st.columns(3)
+                    with cols[0]:
+                        st.metric("MCA Status", result["external_intelligence"].get("mca_status", "N/A"))
+                    with cols[1]:
+                        st.metric("GSTIN Status", result["external_intelligence"].get("gstin_status", "N/A"))
+                    with cols[2]:
+                        st.metric("Compliance Score", result["external_intelligence"].get("compliance_score", "N/A"))
+                    
+                    # Display retrieved documents in a neat table format
+                    if "retrieved_documents" in result["external_intelligence"]:
+                        st.subheader("📑 Retrieved Company Records")
+                        docs = result["external_intelligence"]["retrieved_documents"]
+                        if isinstance(docs, list):
+                            for i, doc in enumerate(docs, 1):
+                                with st.container():
+                                    st.markdown(f"**Document {i}**")
+                                    col1, col2 = st.columns([2, 1])
+                                    with col1:
+                                        if isinstance(doc, dict):
+                                            st.markdown(f"**Company:** {doc.get('company_name', 'N/A')}")
+                                            st.markdown(f"**Summary:** {doc.get('summary', 'N/A')}")
+                                            st.caption(f"Source: {doc.get('source', 'N/A')} | Date: {doc.get('date', 'N/A')}")
+                                    with col2:
+                                        if isinstance(doc, dict):
+                                            st.metric("Relevance Score", f"{doc.get('relevance_score', 0):.2f}%")
+                                    st.markdown("---")
+                    
+                    # Display other intelligence details
+                    st.subheader("🔍 Additional Details")
+                    if "regulatory_issues" in result["external_intelligence"]:
+                        issues = result["external_intelligence"]["regulatory_issues"]
+                        if issues and issues.lower() != "none identified":
+                            st.error(f"⚠️ Regulatory Issues: {issues}")
+                        else:
+                            st.success("✅ No regulatory issues identified")
+                    
+                    if "risk_level" in result["external_intelligence"]:
+                        risk_level = result["external_intelligence"]["risk_level"]
+                        risk_color = {
+                            "Low": "success",
+                            "Medium": "warning",
+                            "High": "error"
+                        }.get(risk_level, "info")
+                        getattr(st, risk_color)(f"Risk Level: {risk_level}")
                 st.header("⭐ Credibility Scoring Agent")
                 st.metric("Risk Score", result["risk_score"])
                 st.info(f"**Justification:** {result['justification']}")

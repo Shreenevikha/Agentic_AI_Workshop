@@ -1,6 +1,6 @@
 langchain
 langgraph
-openai
+google-generativeai
 faiss-cpu
 chromadb
 pypdf2
