@@ -40,20 +40,6 @@ python main.py
    - Detect risk signals
    - Generate a risk score and recommendations
 
-## Project Structure
-
-```
-vendor_risk_analyzer/
-├── agents/
-│   ├── document_analysis_agent.py
-│   ├── risk_signal_agent.py
-│   └── credibility_agent.py
-├── config.py
-├── main.py
-├── requirements.txt
-└── README.md
-```
-
 ## Configuration
 
 The system can be configured through `config.py`:

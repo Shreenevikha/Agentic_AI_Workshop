@@ -1,0 +1,9 @@
+langchain
+langgraph
+openai
+faiss-cpu
+chromadb
+pypdf2
+pdfplumber
+requests
+python-dotenv 
