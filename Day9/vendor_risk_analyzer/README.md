@@ -56,7 +56,7 @@ pip install -r requirements.txt
 
 3. **Set up environment variables**
 ```bash
-export GEMINI_API_KEY=="your-openai-api-key"
+export GEMINI_API_KEY=="your-google-api-key"
 ```
 
 ## 🚀 Usage
@@ -197,62 +197,42 @@ This will test:
 
 ### Environment Variables
 ```bash
-GEMINI_API_KEY==your-openai-api-key
+GEMINI_API_KEY==your-gemini-api-key
 ```
 
-### Agent Configuration
-Each agent can be configured with:
-- **Temperature**: Control randomness (0 for deterministic)
-- **Model**: OpenAI model selection
-- **Tools**: Custom tool definitions
-- **Prompts**: Specialized prompt templates
+## 🚀 Future Enhancements & Roadmap
 
-## 📈 Performance
+### Real-Time Data Integration
+The current implementation uses a robust sample knowledge base for the hackathon demonstration. Future versions will include:
+- Live integration with MCA portal API for real-time company status
+- Direct GSTIN verification through GST portal
+- Real-time legal case data from court APIs
+- Automated regulatory compliance updates
 
-- **Document Processing**: ~2-3 seconds per document
-- **RAG Retrieval**: ~1-2 seconds per query
-- **Agent Workflow**: ~5-8 seconds end-to-end
-- **Vector Search**: Sub-second similarity search
+### Enhanced Data Freshness
+Building upon our current RAG system:
+- Automated knowledge base updates with latest compliance data
+- Real-time regulatory change monitoring
+- Historical compliance tracking
+- Industry-specific regulation updates
 
-## 🛡️ Error Handling
+### Expanded Knowledge Base
+Future versions will enhance the current sample data with:
+- Larger vendor database with industry-specific metrics
+- Comprehensive regulatory guidelines across sectors
+- Historical compliance patterns and trend analysis
+- Machine learning-based risk prediction models
 
-- **Graceful Degradation**: Fallback to rule-based methods if LLM fails
-- **Input Validation**: Comprehensive data validation
-- **Exception Handling**: Detailed error reporting
-- **Recovery Mechanisms**: Automatic retry and fallback
+### API Integration Framework
+The system is designed with extensibility in mind:
+- Modular API integration architecture
+- Plug-and-play data source connectors
+- Rate limiting and caching mechanisms
+- Error handling and fallback strategies
 
-## 🔄 Workflow
+These enhancements are planned for post-hackathon development, building upon the solid foundation of our current implementation that demonstrates the core functionality using a comprehensive sample dataset.
 
-1. **Document Upload** → FastAPI backend
-2. **Document Analysis Agent** → Extract vendor information
-3. **Risk Signal Agent** → Detect compliance issues
-4. **External Intelligence Agent** → RAG-based compliance lookup
-5. **Credibility Scoring Agent** → Generate risk assessment
-6. **Result Compilation** → Return comprehensive report
 
-## 🎯 Key Improvements Made
-
-### ✅ **Agent Implementation**
-- Replaced simple functions with proper LangChain agents
-- Added AgentExecutor for proper agent orchestration
-- Implemented tools and prompts for each agent
-- Added error handling and fallback mechanisms
-
-### ✅ **RAG System**
-- Implemented FAISS vector store with document storage
-- Added OpenAI embeddings for semantic search
-- Created retrieval pipeline with vendor-specific queries
-- Built sample knowledge base with compliance data
-
-### ✅ **Retrieval Functionality**
-- Document similarity search using embeddings
-- Vendor compliance data retrieval
-- Metadata tracking and result ranking
-- Knowledge base initialization and management
-
-## 📝 License
-
-This project is licensed under the MIT License.
 
 ## 🤝 Contributing
 
@@ -265,3 +245,10 @@ This project is licensed under the MIT License.
 ---
 
 **Note**: This implementation addresses the evaluation feedback by providing proper LangChain agent implementation with full RAG functionality and document retrieval capabilities. 
+
+## 🙏 Acknowledgments
+
+- LangChain for the amazing agent framework
+- Gemini for embeddings and LLM capabilities
+- FAISS for efficient vector search
+- Streamlit for the beautiful UI 
