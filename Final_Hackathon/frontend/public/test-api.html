@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API Test</title>
+</head>
+<body>
+    <h1>Pipeline API Test</h1>
+    <input type="file" id="csvFile" accept=".csv">
+    <button onclick="testAPI()">Test Pipeline API</button>
+    <div id="result"></div>
+
+    <script>
+        async function testAPI() {
+            const fileInput = document.getElementById('csvFile');
+            const resultDiv = document.getElementById('result');
+            
+            if (!fileInput.files[0]) {
+                resultDiv.innerHTML = '<h3>❌ Please select a CSV file first</h3>';
+                return;
+            }
+
+            resultDiv.innerHTML = '<h3>Testing...</h3>';
+            
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+            formData.append('domain', 'tax');
+            formData.append('entity_type', 'business');
+            formData.append('filing_type', 'GSTR-1');
+            formData.append('period_start', '2024-01-01T00:00:00');
+            formData.append('period_end', '2024-12-31T23:59:59');
+
+            try {
+                console.log('Testing API with FormData...');
+                const response = await fetch('http://localhost:8000/api/v1/pipeline/run', {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                console.log('Response status:', response.status);
+                console.log('Response headers:', response.headers);
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('Error response:', errorText);
+                    resultDiv.innerHTML = `<h3>❌ Error: HTTP ${response.status}</h3><pre>${errorText}</pre>`;
+                    return;
+                }
+
+                const result = await response.json();
+                console.log('Success response:', result);
+                resultDiv.innerHTML = `<h3>✅ Success!</h3><pre>${JSON.stringify(result, null, 2)}</pre>`;
+
+            } catch (error) {
+                console.error('API test error:', error);
+                resultDiv.innerHTML = `<h3>❌ Error</h3><pre>${error.message}</pre>`;
+            }
+        }
+    </script>
+</body>
+</html> 

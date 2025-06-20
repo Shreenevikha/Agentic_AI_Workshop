@@ -29,7 +29,7 @@ class RAGRetriever:
         
     def get_embedding(self, text: str) -> List[float]:
         """Get embedding for a text using OpenAI or fallback."""
-        if self.use_gemini:
+        if self.use_gemini  :
             try:
                 response = openai.Embedding.create(
                     input=text,

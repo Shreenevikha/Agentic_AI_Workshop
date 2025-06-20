@@ -1,0 +1,11 @@
+date,description,amount,category,vendor,tax_type,is_debit
+2024-01-15,Office Supplies Purchase,1250.00,Office Expenses,OfficeMax,GST,True
+2024-01-20,Client Payment Received,50000.00,Revenue,Client ABC,Income Tax,False
+2024-01-25,Internet Service Bill,2500.00,Utilities,Internet Provider,GST,True
+2024-02-01,Employee Salary,35000.00,Payroll,Employee XYZ,TDS,True
+2024-02-05,Software License,15000.00,Technology,Software Corp,GST,True
+2024-02-10,Consulting Fee Received,75000.00,Revenue,Client DEF,Income Tax,False
+2024-02-15,Travel Expenses,8500.00,Travel,Airline,GST,True
+2024-02-20,Marketing Campaign,12000.00,Marketing,Ad Agency,GST,True
+2024-03-01,Office Rent,25000.00,Rent,Landlord,Rent Tax,True
+2024-03-05,Equipment Purchase,45000.00,Equipment,Hardware Store,GST,True 

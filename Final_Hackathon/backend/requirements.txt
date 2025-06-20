@@ -1,0 +1,64 @@
+# Core Framework
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+pydantic==2.5.0
+python-multipart==0.0.6
+
+# LangChain & LangGraph
+langchain==0.1.0
+langchain-google-genai==0.0.6
+langchain-community==0.0.10
+langgraph==0.0.20
+
+# Database - MongoDB
+motor==3.3.2
+pymongo==4.6.0
+beanie==1.24.0
+
+# Vector Database - ChromaDB (Local, no API key needed)
+chromadb==0.4.18
+
+# AI & ML - Gemini + HuggingFace
+google-generativeai==0.3.2
+sentence-transformers==2.2.2
+transformers==4.35.2
+torch==2.1.1
+
+# Data Processing
+pandas==2.1.4
+numpy==1.25.2
+python-dotenv==1.0.0
+
+# HTTP & API
+httpx==0.25.2
+requests==2.31.0
+aiofiles==23.2.1
+
+# Security
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+python-multipart==0.0.6
+
+# Utilities
+python-dateutil==2.8.2
+pytz==2023.3
+loguru==0.7.2
+
+# Testing
+pytest==7.4.3
+pytest-asyncio==0.21.1
+httpx==0.25.2
+
+# Development
+black==23.11.0
+isort==5.12.0
+flake8==6.1.0
+
+# Added from the code block
+aiohttp==3.9.1
+beautifulsoup4==4.12.2
+feedparser==6.0.10
+lxml==4.9.3
+PyPDF2==3.0.1
+pdfplumber==0.10.3
+schedule==1.2.0 

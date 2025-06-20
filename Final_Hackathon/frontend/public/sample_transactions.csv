@@ -1,0 +1,11 @@
+date,description,amount,category,vendor,tax_type,is_debit
+2024-01-15,Office Supplies,1500.00,Expenses,Office Depot,GST,True
+2024-01-20,Software License,2500.00,Technology,Microsoft,GST,True
+2024-01-25,Consulting Services,5000.00,Services,ABC Consulting,GST,True
+2024-01-30,Marketing Campaign,3000.00,Marketing,Digital Ads Inc,GST,True
+2024-02-05,Equipment Purchase,8000.00,Assets,Tech Equipment Co,GST,True
+2024-02-10,Travel Expenses,1200.00,Travel,Airline Tickets,GST,True
+2024-02-15,Legal Fees,4000.00,Legal,Law Firm LLP,GST,True
+2024-02-20,Insurance Premium,2500.00,Insurance,Insurance Co,GST,True
+2024-02-25,Utilities Payment,800.00,Utilities,Power Company,GST,True
+2024-02-28,Maintenance Services,1500.00,Services,Maintenance Co,GST,True 
