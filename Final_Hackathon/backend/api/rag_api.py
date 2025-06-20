@@ -6,13 +6,29 @@ from agents.rag_agent import (
     rag_compliance_query_agent,
     hybrid_search_agent
 )
-from agents.regulation_fetcher_agent import vector_store
+import agents.regulation_fetcher_agent as reg_fetcher
 from database.mongo_database import connect_to_mongo
 import logging
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/v1/rag", tags=["rag"])
+
+# --- Start of New Helper Function ---
+async def ensure_vector_store_is_ready():
+    """
+    Checks if the vector store is initialized. If not, it initializes it.
+    This makes the RAG API self-sufficient and resilient.
+    """
+    if reg_fetcher.vector_store is None:
+        logger.warning("Vector store not initialized. Attempting to initialize now...")
+        if not reg_fetcher.initialize_regulation_fetcher_agent():
+            raise HTTPException(
+                status_code=503, 
+                detail="Could not initialize the vector store. The RAG service is temporarily unavailable."
+            )
+        logger.info("Vector store initialized successfully on-demand.")
+# --- End of New Helper Function ---
 
 # Pydantic models for request/response
 class RAGQueryRequest(BaseModel):
@@ -40,92 +56,76 @@ class HybridSearchResponse(BaseModel):
     execution_id: str
     error: Optional[str] = None
 
-# Initialize RAG agent on startup
 @router.on_event("startup")
 async def startup_event():
-    """Initialize the RAG agent on startup"""
+    """Attempt to initialize the RAG agent on startup for better performance."""
     try:
-        if vector_store:
-            success = initialize_rag_agent(vector_store)
-            if success:
-                logger.info("RAG Agent initialized successfully")
-            else:
-                logger.error("Failed to initialize RAG Agent")
-        else:
-            logger.warning("Vector store not available for RAG agent initialization - will initialize when needed")
+        await ensure_vector_store_is_ready()
+        logger.info("RAG API startup: Initial check/load of vector store complete.")
     except Exception as e:
-        logger.error(f"Error initializing RAG agent: {e}")
+        logger.error(f"Error during RAG API startup initialization: {e}")
 
 @router.post("/query", response_model=RAGResponse)
 async def rag_compliance_query(request: RAGQueryRequest):
     """Query tax compliance using RAG pipeline"""
     try:
-        # Ensure database connection
         await connect_to_mongo()
+        await ensure_vector_store_is_ready() # This guarantees the vector store is loaded
         
-        # Try to initialize RAG agent if not already done
-        if not vector_store:
-            raise HTTPException(
-                status_code=503, 
-                detail="Vector store not available. Please ensure regulation fetcher agent is initialized first."
-            )
-        
+        # Always use the live vector store from the module
+        if not initialize_rag_agent(reg_fetcher.vector_store):
+             raise HTTPException(status_code=503, detail="Could not initialize the RAG Agent.")
+
         result = await rag_compliance_query_agent(
             query=request.query,
             domain=request.domain,
             entity_type=request.entity_type
         )
         
-        if result["success"]:
+        if result.get("success"):
             return RAGResponse(
                 success=True,
-                answer=result["answer"],
-                sources=result["sources"],
-                execution_id=result["execution_id"]
+                answer=result.get("answer"),
+                sources=result.get("sources"),
+                execution_id=result.get("execution_id")
             )
         else:
-            raise HTTPException(status_code=500, detail=result["error"])
+            raise HTTPException(status_code=500, detail=result.get("error", "Unknown error in RAG agent"))
             
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Error in RAG query: {e}")
+        logger.error(f"Error in RAG query endpoint: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.post("/hybrid-search", response_model=HybridSearchResponse)
 async def hybrid_search(request: HybridSearchRequest):
     """Perform hybrid search combining vector and keyword search"""
     try:
-        # Ensure database connection
         await connect_to_mongo()
-        
-        if not vector_store:
-            raise HTTPException(
-                status_code=503, 
-                detail="Vector store not available. Please ensure regulation fetcher agent is initialized first."
-            )
-        
+        await ensure_vector_store_is_ready() # This guarantees the vector store is loaded
+
         result = await hybrid_search_agent(
             query=request.query,
-            vector_store=vector_store,
+            vector_store=reg_fetcher.vector_store,
             domain=request.domain,
             entity_type=request.entity_type
         )
         
-        if result["success"]:
+        if result.get("success"):
             return HybridSearchResponse(
                 success=True,
-                results=result["results"],
-                count=result["count"],
-                execution_id=result["execution_id"]
+                results=result.get("results"),
+                count=result.get("count"),
+                execution_id=result.get("execution_id")
             )
         else:
-            raise HTTPException(status_code=500, detail=result["error"])
+            raise HTTPException(status_code=500, detail=result.get("error", "Unknown error in hybrid search agent"))
             
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Error in hybrid search: {e}")
+        logger.error(f"Error in hybrid search endpoint: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/health")
@@ -133,17 +133,17 @@ async def rag_health_check():
     """Health check for RAG components"""
     try:
         # Check if vector store is available
-        vector_store_status = "available" if vector_store else "unavailable"
+        vector_store_status = "available" if reg_fetcher.vector_store else "unavailable"
         
         # Try to get RAG agent status
         from agents.rag_agent import is_initialized
         rag_status = "initialized" if is_initialized else "not_initialized"
         
         return {
-            "status": "healthy" if vector_store else "degraded",
+            "status": "healthy" if reg_fetcher.vector_store else "degraded",
             "vector_store": vector_store_status,
             "rag_agent": rag_status,
-            "message": "RAG system is ready" if vector_store and is_initialized else "RAG system needs initialization"
+            "message": "RAG system is ready" if reg_fetcher.vector_store and is_initialized else "RAG system needs initialization"
         }
         
     except Exception as e:
@@ -181,13 +181,13 @@ async def get_rag_capabilities():
 async def initialize_rag_system():
     """Manually initialize RAG system"""
     try:
-        if not vector_store:
+        if not reg_fetcher.vector_store:
             raise HTTPException(
                 status_code=503, 
                 detail="Vector store not available. Please initialize regulation fetcher agent first."
             )
         
-        success = initialize_rag_agent(vector_store)
+        success = initialize_rag_agent(reg_fetcher.vector_store)
         if success:
             return {"success": True, "message": "RAG system initialized successfully"}
         else:

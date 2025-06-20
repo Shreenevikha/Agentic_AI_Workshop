@@ -1,11 +1,21 @@
-date,description,amount,category,vendor,tax_type,is_debit
-2024-01-15,Office Supplies Purchase,1250.00,Office Expenses,OfficeMax,GST,True
-2024-01-20,Client Payment Received,50000.00,Revenue,Client ABC,Income Tax,False
-2024-01-25,Internet Service Bill,2500.00,Utilities,Internet Provider,GST,True
-2024-02-01,Employee Salary,35000.00,Payroll,Employee XYZ,TDS,True
-2024-02-05,Software License,15000.00,Technology,Software Corp,GST,True
-2024-02-10,Consulting Fee Received,75000.00,Revenue,Client DEF,Income Tax,False
-2024-02-15,Travel Expenses,8500.00,Travel,Airline,GST,True
-2024-02-20,Marketing Campaign,12000.00,Marketing,Ad Agency,GST,True
-2024-03-01,Office Rent,25000.00,Rent,Landlord,Rent Tax,True
-2024-03-05,Equipment Purchase,45000.00,Equipment,Hardware Store,GST,True 
+transaction_id,date,description,amount,tax_type,compliance_status
+TXN001,2024-01-15,Office Supplies Purchase,50000,GST,valid
+TXN002,2024-01-16,Consulting Services,100000,TDS,pending
+TXN003,2024-01-17,Equipment Purchase,75000,GST,valid
+TXN004,2024-01-18,Software License,25000,GST,warning
+TXN005,2024-01-19,Professional Fees,150000,TDS,valid
+TXN006,2024-01-20,Raw Materials,120000,GST,valid
+TXN007,2024-01-21,Marketing Services,80000,GST,valid
+TXN008,2024-01-22,Legal Services,200000,TDS,valid
+TXN009,2024-01-23,Transportation,45000,GST,pending
+TXN010,2024-01-24,IT Services,95000,GST,valid
+TXN011,2024-01-25,Advertising,60000,GST,valid
+TXN012,2024-01-26,Audit Services,180000,TDS,valid
+TXN013,2024-01-27,Maintenance Services,35000,GST,valid
+TXN014,2024-01-28,Training Services,70000,TDS,valid
+TXN015,2024-01-29,Insurance Premium,40000,GST,valid
+TXN016,2024-01-30,Telecommunications,55000,GST,valid
+TXN017,2024-01-31,Printing Services,30000,GST,valid
+TXN018,2024-02-01,Cleaning Services,25000,GST,valid
+TXN019,2024-02-02,Security Services,65000,GST,valid
+TXN020,2024-02-03,Research Services,110000,TDS,valid 

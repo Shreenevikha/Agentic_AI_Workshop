@@ -1,6 +1,12 @@
 #SHREENEVIKHA N
 # Agentic AI-Based Autonomous Compliance Checker & Tax Filing Assistant
 
+
+Documentation Link: https://docs.google.com/document/d/1NSuaKAhlBKar_injYquNsVDMOY6yMKC2UjgG8MDMmC4/edit?usp=sharing
+
+Workflow Link : https://www.mermaidchart.com/app/projects/fb0e2671-610e-4e29-8e52-07fd7a80f667/diagrams/f734ef4c-f54f-4bea-ba3d-5d6dd43e92e4/version/v0.1/edit
+
+
 This project is a sophisticated, AI-driven platform designed to automate the complex process of financial compliance and tax filing. It leverages a multi-agent system to ingest raw financial data, validate it against regulations, detect anomalies, and generate filing-ready reports, all accessible through a modern web interface.
 
 ## Core Architecture

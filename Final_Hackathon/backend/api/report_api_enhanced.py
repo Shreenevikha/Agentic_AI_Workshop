@@ -1,6 +1,6 @@
 """
-Filing Report Generator API
-API endpoints for filing report generation functionality
+Enhanced Filing Report Generator API
+API endpoints for filing report generation with downloadable PDF and JSON files
 """
 
 from fastapi import APIRouter, HTTPException, Depends
@@ -139,9 +139,9 @@ async def get_reports_summary():
         
         # Get summary statistics
         total_reports = await FilingReport.count()
-        ready_reports = await FilingReport.count({"status": "READY"})
-        submitted_reports = await FilingReport.count({"status": "SUBMITTED"})
-        draft_reports = await FilingReport.count({"status": "DRAFT"})
+        ready_reports = await FilingReport.count({"status": "ready"})
+        submitted_reports = await FilingReport.count({"status": "submitted"})
+        draft_reports = await FilingReport.count({"status": "draft"})
         
         # Get total amounts
         pipeline = [
@@ -248,12 +248,17 @@ async def download_report(report_id: str, file_type: str = "json"):
 async def generate_pdf_report_for_download(report: FilingReport, filename: str) -> str:
     """Generate a professional PDF report for download"""
     try:
-        from reportlab.lib.pagesizes import letter, A4
-        from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
-        from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-        from reportlab.lib.units import inch
-        from reportlab.lib import colors
-        from reportlab.lib.enums import TA_CENTER, TA_LEFT
+        # Try to import ReportLab for PDF generation
+        try:
+            from reportlab.lib.pagesizes import A4
+            from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+            from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+            from reportlab.lib.units import inch
+            from reportlab.lib import colors
+            from reportlab.lib.enums import TA_CENTER, TA_LEFT
+        except ImportError:
+            logger.error("ReportLab not installed. Installing fallback PDF generation...")
+            return await generate_simple_pdf_fallback(report, filename)
         
         # Create reports directory if it doesn't exist
         reports_dir = Path("reports")
@@ -382,11 +387,72 @@ async def generate_pdf_report_for_download(report: FilingReport, filename: str) 
         doc.build(story)
         return str(pdf_path)
         
-    except ImportError:
-        logger.error("ReportLab not installed. Cannot generate PDF.")
-        return None
     except Exception as e:
         logger.error(f"Error generating PDF report: {e}")
+        return await generate_simple_pdf_fallback(report, filename)
+
+async def generate_simple_pdf_fallback(report: FilingReport, filename: str) -> str:
+    """Fallback PDF generation using simple text-to-PDF conversion"""
+    try:
+        # Create reports directory if it doesn't exist
+        reports_dir = Path("reports")
+        reports_dir.mkdir(exist_ok=True)
+        
+        pdf_path = reports_dir / filename
+        
+        # Create a simple text-based PDF using fpdf2 if available
+        try:
+            from fpdf import FPDF
+            
+            pdf = FPDF()
+            pdf.add_page()
+            pdf.set_font("Arial", size=16)
+            
+            # Title
+            pdf.cell(200, 10, txt="Tax Filing Report", ln=True, align='C')
+            pdf.ln(10)
+            
+            # Report Information
+            pdf.set_font("Arial", size=12)
+            pdf.cell(200, 10, txt=f"Report ID: {report.report_id}", ln=True)
+            pdf.cell(200, 10, txt=f"Filing Type: {report.filing_type}", ln=True)
+            pdf.cell(200, 10, txt=f"Status: {report.status.upper()}", ln=True)
+            pdf.cell(200, 10, txt=f"Created Date: {report.created_at.strftime('%B %d, %Y')}", ln=True)
+            pdf.ln(10)
+            
+            # Financial Summary
+            pdf.set_font("Arial", size=14)
+            pdf.cell(200, 10, txt="Financial Summary", ln=True)
+            pdf.set_font("Arial", size=12)
+            pdf.cell(200, 10, txt=f"Total Amount: ₹{report.total_amount:,.2f}", ln=True)
+            pdf.cell(200, 10, txt=f"Tax Amount: ₹{report.tax_amount:,.2f}", ln=True)
+            pdf.cell(200, 10, txt=f"Net Amount: ₹{(report.total_amount - report.tax_amount):,.2f}", ln=True)
+            
+            pdf.output(str(pdf_path))
+            return str(pdf_path)
+            
+        except ImportError:
+            # If fpdf2 is not available, create a simple text file
+            txt_path = pdf_path.with_suffix('.txt')
+            with open(txt_path, 'w', encoding='utf-8') as f:
+                f.write("TAX FILING REPORT\n")
+                f.write("=" * 50 + "\n\n")
+                f.write(f"Report ID: {report.report_id}\n")
+                f.write(f"Filing Type: {report.filing_type}\n")
+                f.write(f"Status: {report.status.upper()}\n")
+                f.write(f"Created Date: {report.created_at.strftime('%B %d, %Y')}\n")
+                f.write(f"Period Start: {report.period_start.strftime('%B %d, %Y') if report.period_start else 'N/A'}\n")
+                f.write(f"Period End: {report.period_end.strftime('%B %d, %Y') if report.period_end else 'N/A'}\n\n")
+                f.write("FINANCIAL SUMMARY\n")
+                f.write("-" * 20 + "\n")
+                f.write(f"Total Amount: ₹{report.total_amount:,.2f}\n")
+                f.write(f"Tax Amount: ₹{report.tax_amount:,.2f}\n")
+                f.write(f"Net Amount: ₹{(report.total_amount - report.tax_amount):,.2f}\n")
+            
+            return str(txt_path)
+            
+    except Exception as e:
+        logger.error(f"Error in fallback PDF generation: {e}")
         return None
 
 @router.get("/schema-validation/{report_id}")

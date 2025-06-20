@@ -18,7 +18,14 @@ const API_CONFIG = {
     COMPLIANCE: '/api/v1/compliance/validate',
     FILING: '/api/v1/filing/aggregate',
     ANOMALY: '/api/v1/anomaly/detect',
-    REPORT: '/api/v1/report/generate'
+    REPORT: '/api/v1/report/generate',
+    REPORTS: {
+      LIST: '/api/v1/reports/list',
+      SUMMARY: '/api/v1/reports/summary',
+      DOWNLOAD: '/api/v1/reports/download',
+      GENERATE: '/api/v1/reports/generate',
+      STATUS: '/api/v1/reports'
+    }
   }
 };
 
