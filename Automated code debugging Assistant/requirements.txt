@@ -1,0 +1,8 @@
+streamlit
+crewai
+langchain
+langchain-community
+google-generativeai
+pydantic
+typing-extensions
+python-dotenv
