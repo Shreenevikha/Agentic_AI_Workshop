@@ -22,10 +22,6 @@ This project showcases a simple and clean chat-like user interface using Streaml
 
 1. **Clone the repository:**
 
-```bash
-git clone https://github.com/your-username/streamlit-chat-ui.git
-cd streamlit-chat-ui
-````
 
 2. **Install dependencies:**
 
@@ -85,9 +81,5 @@ You can tweak the following:
 * Background color for each role
 * Font size and weight
 * Padding, margin, and border radius
-
-
-
-Made with ❤️ using [Streamlit](https://streamlit.io/)
 
 
