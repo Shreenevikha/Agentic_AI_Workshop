@@ -104,9 +104,92 @@ def run_langgraph(user_query, retriever):
     app = workflow.compile()
     return app.invoke({"query": user_query, "retriever": retriever})["final"]
 
-# ---------------------- STREAMLIT APP ----------------------
-st.set_page_config(page_title="🔍 Fully Agentic Research Assistant", layout="centered")
-st.title("🧠 Multi-Agent RAG System (LangGraph + Web + RAG + LLM)")
+# ---------------------- CUSTOM CSS & UI ----------------------
+custom_css = """
+<style>
+body, .stApp {
+    background: linear-gradient(120deg, #f6f7fb 0%, #e3eafc 100%);
+    color: #222831;
+}
+[data-testid="stSidebar"] {
+    background: #1b263b;
+    color: #f6f7fb;
+}
+.st-emotion-cache-10trblm {
+    color: #4361ee;
+    font-weight: 800;
+    letter-spacing: 1px;
+}
+.stButton > button {
+    background: linear-gradient(90deg, #4361ee 0%, #48cae4 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    padding: 0.5em 2em;
+    margin-top: 1em;
+    transition: background 0.3s;
+}
+.stButton > button:hover {
+    background: linear-gradient(90deg, #48cae4 0%, #4361ee 100%);
+}
+.st-expanderHeader {
+    background: #e3eafc;
+    color: #4361ee;
+    font-weight: 600;
+    border-radius: 6px;
+}
+.stAlert {
+    border-radius: 8px;
+}
+.card {
+    background: #f6f7fb;
+    border-radius: 18px;
+    box-shadow: 0 2px 12px rgba(44, 62, 80, 0.07);
+    padding: 2.5rem 2.5rem 1.5rem 2.5rem;
+    min-width: 350px;
+    max-width: 480px;
+    width: 100%;
+    margin: 0 auto 1.5rem auto;
+}
+.result-box {
+    background: #eafbe7;
+    border-left: 6px solid #43aa8b;
+    border-radius: 12px;
+    padding: 22px;
+    margin-bottom: 16px;
+}
+</style>
+"""
+st.markdown(custom_css, unsafe_allow_html=True)
+
+st.set_page_config(page_title="Agentic Research Assistant Pro", layout="wide", page_icon="🔎")
+
+with st.sidebar:
+    st.image(
+        "https://images.unsplash.com/photo-1465101178521-c1a9136a3b43?auto=format&fit=crop&w=400&q=80",
+        use_column_width=True,
+    )
+    st.title("🔎 Research Assistant Pro")
+    st.markdown(
+        """
+        <div style='font-size: 1.1em;'>
+        <b>Multi-Agent RAG, Web, LLM</b><br>
+        <span style='color:#4361ee;'>Modern, unique, and professional.</span>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+    st.markdown("---")
+    st.info("1. Upload your docs (optional).\n2. Enter your question.\n3. Click 'Submit'.", icon="📝")
+    st.markdown("---")
+    st.caption("Powered by Gemini + LangGraph")
+
+st.title("Agentic Research Assistant Pro 🔎")
+st.markdown(
+    "<div style='font-size:1.15em; margin-bottom:1em;'>A professional, multi-agent system for research, summarization, and web search.\nGet concise, AI-powered answers instantly!</div>",
+    unsafe_allow_html=True,
+)
 
 retriever = None
 documents_loaded = False
@@ -140,9 +223,14 @@ if not documents_loaded:
     vectorstore = FAISS.from_documents(docs, embeddings)
     retriever = vectorstore.as_retriever()
 
-# User Input
-query = st.text_input("💬 Ask your question", placeholder="e.g. What is LangGraph?")
-submit = st.button("Submit")
+# User Input Card
+st.markdown("<div class='card'>", unsafe_allow_html=True)
+col1, col2 = st.columns([3, 1])
+with col1:
+    query = st.text_input("Ask your research question", placeholder="e.g. What is LangGraph?")
+with col2:
+    submit = st.button("Submit", use_container_width=True)
+st.markdown("</div>", unsafe_allow_html=True)
 
 if submit:
     if not query.strip():
@@ -152,7 +240,10 @@ if submit:
             try:
                 answer = run_langgraph(query, retriever)
                 st.success("✅ Done!")
+                st.markdown("---")
                 st.subheader("📘 Answer:")
-                st.write(answer)
+                st.markdown(f"<div class='result-box'>{answer}</div>", unsafe_allow_html=True)
             except Exception as e:
                 st.error(f"❌ Error: {str(e)}")
+else:
+    st.info("Enter your research question in the card above to begin.")
