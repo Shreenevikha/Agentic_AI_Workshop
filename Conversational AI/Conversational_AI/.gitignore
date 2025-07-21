@@ -29,6 +29,21 @@ env/
 ENV/
 .venv/
 .env/
+# Environments
+.env
+.env.*
+.venv
+venv/
+ENV/
+env.bak/
+venv.bak/
+**/.env
+# API Keys and Secrets
+.env
+.env.local
+.env.production
+secrets.toml
+config.toml
 
 # PyInstaller
 *.manifest

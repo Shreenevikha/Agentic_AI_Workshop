@@ -108,6 +108,12 @@ env.bak/
 venv.bak/
 **/.env
 
+# API Keys and Secrets
+.env
+.env.local
+.env.production
+secrets.toml
+config.toml
 # Spyder project settings
 .spyderproject
 .spyproject
