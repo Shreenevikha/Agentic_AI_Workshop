@@ -1,25 +1,5 @@
 # 🎓 Personalized Learning Assistant
-
-[![Python](https://img.shields.io/badge/Python-3.8%2B-blue.svg)](https://www.python.org/)
-[![Streamlit](https://img.shields.io/badge/Streamlit-1.28%2B-red.svg)](https://streamlit.io/)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![AI Powered](https://img.shields.io/badge/AI%20Powered-Gemini%20%26%20CrewAI-purple.svg)](https://ai.google.dev/)
-
 An intelligent, **AI-powered learning assistant** that generates personalized **learning materials**, **interactive quizzes**, and **hands-on project ideas** for any topic and skill level. Built with cutting-edge AI technology using **Google Gemini AI**, **Serper API**, and **CrewAI**.
-
----
-
-## 🌟 **Demo & Screenshots**
-
-### Main Interface
-![Learning Assistant Interface](https://via.placeholder.com/800x400/667eea/ffffff?text=Learning+Assistant+Interface)
-
-### Generated Learning Path
-![Learning Path Results](https://via.placeholder.com/800x400/28a745/ffffff?text=Learning+Path+Results)
-
-> *Replace with actual screenshots of your application*
-
----
 
 ## 🚀 **Key Features**
 
@@ -353,51 +333,3 @@ pip install -r requirements-dev.txt
 
 ---
 
-## 📄 **License**
-
-This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
-
-```
-MIT License
-
-Copyright (c) 2024 Your Name
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-```
-
----
-
-## 🙌 **Acknowledgments**
-
-### **Technologies & APIs**
-- [Google Generative AI](https://ai.google.dev/) - Powering content generation
-- [Serper API](https://serper.dev/) - Enabling intelligent web search
-- [CrewAI Framework](https://docs.crewai.com/) - Multi-agent orchestration
-- [Streamlit](https://streamlit.io/) - Beautiful web application framework
-- [LangChain](https://www.langchain.com/) - LLM integration and tools
-
-### **Community & Support**
-- Stack Overflow community for troubleshooting
-- GitHub open-source contributors
-- Streamlit community for UI/UX inspiration
-- AI/ML community for best practices
-
-
-
-## ⭐ **Star History**
-
-
-
-**If this project helped you, please consider giving it a ⭐!**
-
-[⬆ Back to Top](#-personalized-learning-assistant)
-
-</div>

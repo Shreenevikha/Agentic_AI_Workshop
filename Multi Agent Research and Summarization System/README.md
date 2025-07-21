@@ -1,5 +1,3 @@
-# Multi-Agent Research and Summarization System
-
 ## Overview
 This project implements a research and summarization agent using LangGraph. The system processes user queries by determining whether they require reasoning from an LLM, web research, or retrieval from a knowledge base. It leverages multiple specialized sub-agents to generate well-structured, informative responses.
 
@@ -30,6 +28,3 @@ This project implements a research and summarization agent using LangGraph. The 
 - `my_docs/` – Directory for datasets (e.g., PDFs)
 - `requirements.txt` – Python dependencies
 
-## Notes
-- Extend the agents as needed for your use case.
-- Ensure API keys or credentials for web research are configured if required. 

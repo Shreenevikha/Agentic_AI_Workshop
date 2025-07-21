@@ -1,14 +1,11 @@
 # Financial Portfolio Manager
-
 An AI-powered financial portfolio analysis tool that provides personalized investment recommendations.
 
 ## Setup Instructions
-
 ### 1. Install Dependencies
 ```bash
 pip install -r requirements.txt
 ```
-
 ### 2. Set up Google API Key
 
 1. **Get a Google API Key:**
@@ -26,19 +23,3 @@ pip install -r requirements.txt
 ### 3. Run the Application
 ```bash
 streamlit run main.py
-```
-
-## Features
-
-- Portfolio analysis and strategy recommendation
-- Personalized investment recommendations
-- Risk assessment
-- Implementation planning
-- Comprehensive financial reports
-
-## Usage
-
-1. Fill in your financial details (salary, age, expenses, goals)
-2. Enter your current portfolio information
-3. Select your risk tolerance
-4. Click "Generate Report" to get your personalized financial analysis 

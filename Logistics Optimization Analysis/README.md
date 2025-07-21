@@ -1,7 +1,4 @@
-# Logistics Optimization Analysis with CrewAI
-
 ## Objective
-
 This project implements a Crew AI system for analyzing logistics data and developing optimization strategies for logistics industry problems, such as optimizing delivery routes or inventory management.
 
 ## Features
@@ -47,6 +44,3 @@ This project implements a Crew AI system for analyzing logistics data and develo
 
 ## Customization
 - You can modify the agent roles, goals, and tasks in `app.py` to suit different logistics problems or industries.
-
-## License
-MIT License 

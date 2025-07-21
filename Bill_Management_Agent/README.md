@@ -1,8 +1,3 @@
-Sure! Here's a sample **README.md** file for your Streamlit project that uses custom CSS to display chat interactions between user and agent. This README assumes you're building a chat UI or an agent interaction interface.
-
----
-
-````markdown
 # 💬 Streamlit Chat UI with Custom Styling
 
 This project showcases a simple and clean chat-like user interface using Streamlit with custom HTML/CSS. It is designed to display user and agent conversations in a visually distinct format.
@@ -44,7 +39,7 @@ pip install -r requirements.txt
 streamlit run app.py
 ```
 
-## 🧑‍💻 Code Overview
+##  Code Overview
 
 In `app.py`:
 
@@ -91,13 +86,8 @@ You can tweak the following:
 * Font size and weight
 * Padding, margin, and border radius
 
----
+
 
 Made with ❤️ using [Streamlit](https://streamlit.io/)
 
-```
 
----
-
-Let me know if you want a GitHub-ready version with images, demo links, or deployment instructions (like for Streamlit Cloud or Hugging Face Spaces).
-```
