@@ -42,7 +42,6 @@ class GeminiAgent:
             return f"Error: {str(e)}"
     
     def __deepcopy__(self, memo):
-        # Create a new instance with same configuration
         return GeminiAgent(
             model=ChatGoogleGenerativeAI(model=self.model.model, google_api_key=api_key),
             system_message=self.system_message
@@ -59,17 +58,120 @@ critic_model = GeminiAgent(
     system_message=CRITIC_SYSTEM_MESSAGE
 )
 
-# Streamlit UI
-st.set_page_config(page_title="Agentic AI Content Refinement", page_icon="🤖", layout="centered")
-st.title("🤖 Agentic AI Content Refinement")
-st.caption("Simulated reflection-based conversation between Content Creator and Content Critic agents")
+# ===== Custom CSS for Professional Look =====
+custom_css = """
+<style>
+body, .stApp {
+    background: linear-gradient(120deg, #f8fafc 0%, #e0e7ef 100%);
+    color: #222831;
+}
+
+[data-testid="stSidebar"] {
+    background: #222831;
+    color: #f8fafc;
+}
+
+.st-emotion-cache-10trblm {
+    color: #0077b6;
+    font-weight: 800;
+    letter-spacing: 1px;
+}
+
+.stButton > button {
+    background: linear-gradient(90deg, #0077b6 0%, #00b4d8 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    padding: 0.5em 2em;
+    margin-top: 1em;
+    transition: background 0.3s;
+}
+.stButton > button:hover {
+    background: linear-gradient(90deg, #00b4d8 0%, #0077b6 100%);
+}
+
+.st-expanderHeader {
+    background: #e0e7ef;
+    color: #0077b6;
+    font-weight: 600;
+    border-radius: 6px;
+}
+
+.stAlert {
+    border-radius: 8px;
+}
+
+.role-header {
+    font-size: 1.1em;
+    font-weight: 700;
+    padding: 10px 0 4px 0;
+    color: #0077b6;
+}
+
+.creator-box {
+    background: #e3f6fd;
+    border-left: 6px solid #00b4d8;
+    border-radius: 10px;
+    padding: 18px;
+    margin-bottom: 10px;
+}
+
+.critic-box {
+    background: #fff4e6;
+    border-left: 6px solid #ffb703;
+    border-radius: 10px;
+    padding: 18px;
+    margin-bottom: 10px;
+}
+
+.final-box {
+    background: #eafbe7;
+    border-left: 6px solid #43aa8b;
+    border-radius: 12px;
+    padding: 22px;
+    margin-bottom: 16px;
+}
+</style>
+"""
+st.markdown(custom_css, unsafe_allow_html=True)
+
+# ===== Streamlit UI (Redesigned) =====
+st.set_page_config(page_title="Agentic Content Refinement", page_icon="🧑‍💼", layout="wide")
+
+with st.sidebar:
+    st.image(
+        "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80",
+        use_column_width=True,
+    )
+    st.title("🧑‍💼 Content Refinement")
+    st.markdown(
+        """
+        <div style='font-size: 1.1em;'>
+        <b>Professional AI Content Workflow</b><br>
+        <span style='color:#0077b6;'>Unique, modern, and plagiarism-free.</span>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+    st.markdown("---")
+    st.info("1. Enter your topic.\n2. Choose number of turns.\n3. Click 'Start Simulation'.", icon="📝")
+    st.markdown("---")
+    st.caption("Powered by Gemini + Autogen")
+
+st.title("Agentic Content Refinement 🧑‍💼")
+st.markdown(
+    "<div style='font-size:1.15em; margin-bottom:1em;'>A professional, multi-agent system for content creation and critique.\nExperience a unique, iterative AI workflow!</div>",
+    unsafe_allow_html=True,
+)
 
 # Controls
-with st.sidebar:
-    st.header("Simulation Settings")
-    topic = st.text_input("Discussion Topic", "Agentic AI")
+col1, col2 = st.columns([2, 1])
+with col1:
+    topic = st.text_input("Content Topic", "Agentic AI")
+with col2:
     turns = st.slider("Conversation Turns", 3, 5, 3)
-    generate_btn = st.button("Start Simulation", use_container_width=True)
+generate_btn = st.button("Start Simulation", use_container_width=True)
 
 if generate_btn:
     # Create AutoGen agents with proper configuration
@@ -107,7 +209,6 @@ if generate_btn:
         is_termination_msg=lambda x: x.get("content", "").find("TERMINATE") >= 0,
     )
     
-    # User proxy agent with Docker disabled
     user_proxy = UserProxyAgent(
         name="User_Proxy",
         human_input_mode="NEVER",
@@ -115,7 +216,6 @@ if generate_btn:
         code_execution_config=False,
     )
     
-    # Initialize conversation state
     conversation_history = []
     creator_output = ""
     critic_feedback = ""
@@ -123,13 +223,13 @@ if generate_btn:
 
     progress = st.progress(0, text="Starting conversation...")
     
-    # Start conversation
     for turn in range(1, turns + 1):
         progress.progress(turn/turns, text=f"Turn {turn} of {turns}")
         if turn % 2 == 1:
             # Content Creator Turn
             with st.container():
-                st.markdown(f"<div style='background-color:#e3f2fd;padding:16px;border-radius:10px'><b>📝 Content Creator (Turn {turn})</b></div>", unsafe_allow_html=True)
+                st.markdown(f"<div class='role-header'>📝 Content Creator (Turn {turn})</div>", unsafe_allow_html=True)
+                st.markdown(f"<div class='creator-box'>", unsafe_allow_html=True)
                 if turn == 1:
                     prompt = f"Draft comprehensive content about {topic} in markdown format covering:\n- Key concepts\n- Technical foundations\n- Real-world applications\n- Future implications"
                 else:
@@ -139,8 +239,8 @@ if generate_btn:
                 creator_output = creator_model.generate(prompt)
                 st.markdown("**Generated Content:**")
                 st.markdown(creator_output)
+                st.markdown("</div>", unsafe_allow_html=True)
                 conversation_history.append((f"Creator (Turn {turn})", creator_output))
-                # Reflection after revision (not on first turn)
                 if turn > 1:
                     reflection_prompt = f"Summarize in 1-2 sentences how you improved the content based on the critic's feedback."
                     reflection = creator_model.generate(reflection_prompt + "\n\nFeedback received:\n" + critic_feedback + "\n\nRevised content:\n" + creator_output)
@@ -149,15 +249,16 @@ if generate_btn:
         else:
             # Content Critic Turn
             with st.container():
-                st.markdown(f"<div style='background-color:#fff3e0;padding:16px;border-radius:10px'><b>🧐 Content Critic (Turn {turn})</b></div>", unsafe_allow_html=True)
+                st.markdown(f"<div class='role-header'>🧐 Content Critic (Turn {turn})</div>", unsafe_allow_html=True)
+                st.markdown(f"<div class='critic-box'>", unsafe_allow_html=True)
                 prompt = f"Evaluate this content on:\n1. Technical accuracy\n2. Clarity of explanations\n3. Depth of coverage\n4. Improvement suggestions\n\nContent:\n{creator_output}"
                 st.markdown("**Prompt:**")
                 st.code(prompt, language="markdown")
                 critic_feedback = critic_model.generate(prompt)
                 st.markdown("**Critical Feedback:**")
                 st.write(critic_feedback)
+                st.markdown("</div>", unsafe_allow_html=True)
                 conversation_history.append((f"Critic (Turn {turn})", critic_feedback))
-                # Critic reflection: did the creator address previous feedback?
                 if turn > 2:
                     critic_reflection_prompt = f"Did the creator address your previous feedback? Summarize in 1-2 sentences."
                     critic_reflection = critic_model.generate(critic_reflection_prompt + "\n\nPrevious feedback:\n" + conversation_history[-3][1] + "\n\nCurrent content:\n" + creator_output)
@@ -168,7 +269,7 @@ if generate_btn:
     progress.empty()
     st.divider()
     st.subheader("✅ Final Refined Content")
-    st.markdown(f"<div style='background-color:#e8f5e9;padding:20px;border-radius:12px'><b>Final Markdown Output:</b><br><br>{creator_output}</div>", unsafe_allow_html=True)
+    st.markdown(f"<div class='final-box'><b>Final Markdown Output:</b><br><br>{creator_output}</div>", unsafe_allow_html=True)
     
     st.divider()
     st.subheader("🗨️ Full Conversation Trace")
@@ -181,3 +282,5 @@ if generate_btn:
         for i, (role, reflection) in enumerate(reflections, 1):
             with st.expander(f"{role}"):
                 st.write(reflection)
+else:
+    st.info("Enter a topic and start the simulation from the sidebar.")

@@ -1,5 +1,7 @@
 import os
 import json
+import datetime
+import pandas as pd
 from typing import List, Dict, Any
 from dotenv import load_dotenv
 from pydantic import BaseModel, Field
@@ -272,86 +274,221 @@ def generate_learning_path(topic: str, level: str):
             "project_ideas": []
         }
 
+def run_quiz(quiz_questions, user_name="User"):
+    st.subheader("📝 Interactive Quiz")
+    if "quiz_score" not in st.session_state:
+        st.session_state.quiz_score = 0
+    if "quiz_answers" not in st.session_state or len(st.session_state.quiz_answers) != len(quiz_questions):
+        st.session_state.quiz_answers = [None] * len(quiz_questions)
+    if "quiz_submitted" not in st.session_state:
+        st.session_state.quiz_submitted = False
+
+    for i, q in enumerate(quiz_questions):
+        st.markdown(f"**Q{i+1}: {q['question']}**")
+        st.session_state.quiz_answers[i] = st.radio(
+            f"Choose your answer for Q{i+1}:",
+            q["options"],
+            key=f"quiz_{i}"
+        )
+        st.markdown("---")
+
+    if st.button("Submit Quiz"):
+        st.session_state.quiz_submitted = True
+        score = 0
+        results = []
+        for i, q in enumerate(quiz_questions):
+            user_ans = st.session_state.quiz_answers[i]
+            correct = user_ans == q["answer"]
+            results.append({
+                "Question": q["question"],
+                "Your Answer": user_ans,
+                "Correct Answer": q["answer"],
+                "Result": "Correct" if correct else "Incorrect",
+                "Points": 1 if correct else 0
+            })
+            if correct:
+                score += 1
+        st.session_state.quiz_score = score
+        st.session_state.quiz_results = results
+
+        # Save to local JSON file
+        quiz_record = {
+            "user": user_name,
+            "timestamp": datetime.datetime.now().isoformat(),
+            "score": score,
+            "total": len(quiz_questions),
+            "results": results
+        }
+        try:
+            with open("quiz_results.json", "a") as f:
+                f.write(json.dumps(quiz_record) + "\n")
+        except Exception as e:
+            st.warning(f"Could not save quiz results: {e}")
+
+    if st.session_state.quiz_submitted:
+        st.success(f"Your Score: {st.session_state.quiz_score} / {len(quiz_questions)}")
+        st.markdown("---")
+        st.markdown("### 📝 Question-wise Feedback")
+        for i, q in enumerate(st.session_state.quiz_results):
+            if q["Result"] == "Correct":
+                st.markdown(f"<div style='color:green;'><b>Q{i+1}:</b> ✅ Correct! (+1 point)<br> <b>Your Answer:</b> {q['Your Answer']}<br> <b>Correct Answer:</b> {q['Correct Answer']}</div>", unsafe_allow_html=True)
+            else:
+                st.markdown(f"<div style='color:#b94a48;'><b>Q{i+1}:</b> ❌ Incorrect (0 points)<br> <b>Your Answer:</b> {q['Your Answer']}<br> <b>Correct Answer:</b> {q['Correct Answer']}</div>", unsafe_allow_html=True)
+            st.markdown("---")
+        df = pd.DataFrame(st.session_state.quiz_results)
+        st.dataframe(df, use_container_width=True)
+        # Download as CSV
+        csv = df.to_csv(index=False).encode('utf-8')
+        st.download_button(
+            label="Download Quiz Results as CSV",
+            data=csv,
+            file_name="quiz_results.csv",
+            mime="text/csv"
+        )
+
 # Streamlit UI
 def main():
-    st.set_page_config(page_title="Personalized Learning Assistant", page_icon="🎓", layout="wide")
-    
-    st.title("🎓 Personalized Learning Assistant")
-    st.markdown("Generate comprehensive learning materials, quizzes, and project ideas for any topic!")
-    st.markdown("---")
-    
+    st.set_page_config(page_title="Personalized Learning Assistant Pro", page_icon="🎓", layout="wide")
+
+    # ===== Custom CSS for Professional Look =====
+    custom_css = """
+    <style>
+    body, .stApp {
+        background: linear-gradient(120deg, #f6f7fb 0%, #e3eafc 100%);
+        color: #222831;
+    }
+    [data-testid="stSidebar"] {
+        background: #1b263b;
+        color: #f6f7fb;
+    }
+    .st-emotion-cache-10trblm {
+        color: #4361ee;
+        font-weight: 800;
+        letter-spacing: 1px;
+    }
+    .stButton > button {
+        background: linear-gradient(90deg, #4361ee 0%, #48cae4 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        padding: 0.5em 2em;
+        margin-top: 1em;
+        transition: background 0.3s;
+    }
+    .stButton > button:hover {
+        background: linear-gradient(90deg, #48cae4 0%, #4361ee 100%);
+    }
+    .st-expanderHeader {
+        background: #e3eafc;
+        color: #4361ee;
+        font-weight: 600;
+        border-radius: 6px;
+    }
+    .stAlert {
+        border-radius: 8px;
+    }
+    .card {
+        background: #f6f7fb;
+        border-radius: 18px;
+        box-shadow: 0 2px 12px rgba(44, 62, 80, 0.07);
+        padding: 2.5rem 2.5rem 1.5rem 2.5rem;
+        min-width: 350px;
+        max-width: 480px;
+        width: 100%;
+        margin: 0 auto 1.5rem auto;
+    }
+    .result-box {
+        background: #eafbe7;
+        border-left: 6px solid #43aa8b;
+        border-radius: 12px;
+        padding: 22px;
+        margin-bottom: 16px;
+    }
+    </style>
+    """
+    st.markdown(custom_css, unsafe_allow_html=True)
+
+    with st.sidebar:
+        st.image(
+            "https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=400&q=80",
+            use_column_width=True,
+        )
+        st.title("🎓 Learning Path Pro")
+        st.markdown(
+            """
+            <div style='font-size: 1.1em;'>
+            <b>Personalized AI Learning, Quiz & Projects</b><br>
+            <span style='color:#4361ee;'>Modern, unique, and professional.</span>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+        st.markdown("---")
+        st.info("1. Enter your topic and level.\n2. Click 'Generate Learning Path'.\n3. Explore your personalized plan!", icon="📝")
+        st.markdown("---")
+        st.caption("Powered by Gemini + CrewAI")
+
+    st.title("Personalized Learning Assistant Pro 🎓")
+    st.markdown(
+        "<div style='font-size:1.15em; margin-bottom:1em;'>A professional, multi-agent system for learning, quizzes, and project ideas.\nGet your personalized path instantly!</div>",
+        unsafe_allow_html=True,
+    )
+
     # Check for API keys
     if not GEMINI_API_KEY:
         st.error("⚠️ Please set your GEMINI_API_KEY in the environment variables.")
         st.stop()
-    
     if not SERPER_API_KEY:
         st.error("⚠️ Please set your SERPER_API_KEY in the environment variables.")
         st.stop()
-    
+
+    st.markdown("<div class='card'>", unsafe_allow_html=True)
     col1, col2 = st.columns(2)
-    
     with col1:
-        topic = st.text_input("📚 Enter your learning topic:", placeholder="e.g., Machine Learning, Python, Data Science")
-    
+        topic = st.text_input("Learning Topic", placeholder="e.g., Machine Learning, Python, Data Science")
     with col2:
-        level = st.selectbox("📊 Select your skill level:", ["Beginner", "Intermediate", "Advanced"])
-    
-    if st.button("🚀 Generate Learning Path", type="primary"):
+        level = st.selectbox("Skill Level", ["Beginner", "Intermediate", "Advanced"])
+    # Prompt for user name before quiz
+    user_name = st.text_input("Your Name (for quiz record)", value="User")
+    st.markdown("</div>", unsafe_allow_html=True)
+
+    generate_btn = st.button("Generate Learning Path 🚀", use_container_width=True)
+
+    if generate_btn:
         if not topic.strip():
             st.error("Please enter a topic to learn about.")
             return
-        
         with st.spinner("🔍 Creating your personalized learning path..."):
             result = generate_learning_path(topic, level)
-            
             if result:
                 st.success("✅ Learning path generated successfully!")
                 st.markdown("---")
-                
-                # Display results in tabs
                 tab1, tab2, tab3 = st.tabs(["📚 Learning Materials", "📝 Quiz", "🚀 Project Ideas"])
-                
                 with tab1:
                     st.subheader("📚 Learning Materials")
-                    
                     learning_materials = result.get("learning_materials", {})
-                    
                     if learning_materials.get("videos"):
                         st.markdown("### 🎥 Videos")
                         for video in learning_materials["videos"]:
                             st.write(f"• {video}")
-                    
                     if learning_materials.get("articles"):
                         st.markdown("### 📄 Articles")
                         for article in learning_materials["articles"]:
                             st.write(f"• {article}")
-                    
                     if learning_materials.get("exercises"):
                         st.markdown("### 💪 Exercises")
                         for exercise in learning_materials["exercises"]:
                             st.write(f"• {exercise}")
-                
                 with tab2:
-                    st.subheader("📝 Quiz Questions")
-                    
                     quiz_questions = result.get("quiz_questions", [])
-                    
                     if quiz_questions:
-                        for i, q in enumerate(quiz_questions, 1):
-                            st.markdown(f"**Question {i}: {q['question']}**")
-                            for j, option in enumerate(q['options'], 1):
-                                st.write(f"   {chr(64+j)}) {option}")
-                            st.write(f"**✅ Correct Answer:** {q['answer']}")
-                            st.markdown("---")
+                        run_quiz(quiz_questions, user_name)
                     else:
                         st.write("No quiz questions generated.")
-                
                 with tab3:
                     st.subheader("🚀 Project Ideas")
-                    
                     project_ideas = result.get("project_ideas", [])
-                    
                     if project_ideas:
                         for i, project in enumerate(project_ideas, 1):
                             st.markdown(f"### Project {i}: {project['title']}")
@@ -360,12 +497,9 @@ def main():
                             st.markdown("---")
                     else:
                         st.write("No project ideas generated.")
-                
-                # Optional: Show raw crew result
                 if result.get("raw_result"):
                     with st.expander("🔍 View Raw AI Output"):
                         st.text(str(result["raw_result"]))
-    
     st.markdown("---")
     st.markdown(
         """

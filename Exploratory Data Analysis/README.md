@@ -20,7 +20,7 @@ This project simplifies and automates the Exploratory Data Analysis (EDA) proces
 1. **Clone the repository**
    ```bash
    git clone <repo-url>
-   cd Exploratory-Data-Analysis
+   cd Exploratory Data Analysis
    ```
 2. **Install dependencies**
    ```bash

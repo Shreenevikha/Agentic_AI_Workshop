@@ -4,32 +4,98 @@ import google.generativeai as genai
 import os
 from dotenv import load_dotenv
 
-# === Streamlit UI ===
-st.set_page_config(page_title="Smart Health Assistant", layout="wide")
+# ===== Custom CSS for Professional Look =====
+custom_css = """
+<style>
+body, .stApp {
+    background: linear-gradient(120deg, #f6f7fb 0%, #e3eafc 100%);
+    color: #222831;
+}
+[data-testid="stSidebar"] {
+    background: #1b263b;
+    color: #f6f7fb;
+}
+.st-emotion-cache-10trblm {
+    color: #4361ee;
+    font-weight: 800;
+    letter-spacing: 1px;
+}
+.stButton > button {
+    background: linear-gradient(90deg, #4361ee 0%, #48cae4 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    padding: 0.5em 2em;
+    margin-top: 1em;
+    transition: background 0.3s;
+}
+.stButton > button:hover {
+    background: linear-gradient(90deg, #48cae4 0%, #4361ee 100%);
+}
+.st-expanderHeader {
+    background: #e3eafc;
+    color: #4361ee;
+    font-weight: 600;
+    border-radius: 6px;
+}
+.stAlert {
+    border-radius: 8px;
+}
+.card {
+    background: #f6f7fb;
+    border-radius: 18px;
+    box-shadow: 0 2px 12px rgba(44, 62, 80, 0.07);
+    padding: 2.5rem 2.5rem 1.5rem 2.5rem;
+    min-width: 350px;
+    max-width: 480px;
+    width: 100%;
+    margin: 0 auto 1.5rem auto;
+}
+.result-box {
+    background: #eafbe7;
+    border-left: 6px solid #43aa8b;
+    border-radius: 12px;
+    padding: 22px;
+    margin-bottom: 16px;
+}
+</style>
+"""
+st.markdown(custom_css, unsafe_allow_html=True)
 
-# Modern header with icon and subtitle
-st.markdown("""
-    <div style='display: flex; flex-direction: column; align-items: center; margin-bottom: 2rem;'>
-        <h1 style='font-size: 2.2rem; margin-bottom: 0.2rem;'>🤖 Smart Health Assistant</h1>
-        <span style='font-size: 1.1rem; opacity: 0.85;'>Your personalized AI-powered health, diet, and fitness planner</span>
-    </div>
-""", unsafe_allow_html=True)
+# ===== Streamlit UI (Redesigned) =====
+st.set_page_config(page_title="Smart Health Assistant Pro", layout="wide", page_icon="🩺")
+
+with st.sidebar:
+    st.image(
+        "https://images.unsplash.com/photo-1519864600265-abb23847ef2c?auto=format&fit=crop&w=400&q=80",
+        use_column_width=True,
+    )
+    st.title("🩺 Health Assistant Pro")
+    st.markdown(
+        """
+        <div style='font-size: 1.1em;'>
+        <b>Personalized AI Health, Diet & Fitness</b><br>
+        <span style='color:#4361ee;'>Modern, unique, and professional.</span>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+    st.markdown("---")
+    st.info("1. Enter your health details.\n2. Click 'Generate Health Plan'.\n3. View your personalized plan!", icon="📝")
+    st.markdown("---")
+    st.caption("Powered by Gemini + Autogen")
+
+st.title("Smart Health Assistant Pro 🩺")
+st.markdown(
+    "<div style='font-size:1.15em; margin-bottom:1em;'>A professional, multi-agent system for health, diet, and fitness planning.\nGet your personalized plan instantly!</div>",
+    unsafe_allow_html=True,
+)
 
 load_dotenv()
-
 default_api_key = os.getenv("GEMINI_API_KEY", "")
 if not default_api_key:
     st.error("API key not found in environment. Please set GEMINI_API_KEY in your .env file.")
-
-# Modern instructions card
-
-
-# Centered card for the form
-
-st.markdown("""
-<div style='display: flex; justify-content: center; margin-bottom: 1.5rem;'>
-    <div style='border-radius: 18px; box-shadow: 0 2px 12px rgba(44, 62, 80, 0.07); padding: 2.5rem 2.5rem 1.5rem 2.5rem; min-width: 350px; max-width: 480px; width: 100%; background: transparent;'>
-""", unsafe_allow_html=True)
 
 # === Session State ===
 if "conversation" not in st.session_state:
@@ -53,7 +119,8 @@ def calculate_bmi(weight_kg: float, height_cm: float) -> float:
     height_m = height_cm / 100
     return round(weight_kg / (height_m ** 2), 1)
 
-# === Health Form ===
+# === Health Form (Redesigned Card) ===
+st.markdown("<div class='card'>", unsafe_allow_html=True)
 with st.form("health_form"):
     st.markdown("<h3 style='margin-bottom: 1.2rem;'>📝 Enter Your Health Details</h3>", unsafe_allow_html=True)
     col1, col2 = st.columns(2, gap="large")
@@ -66,8 +133,7 @@ with st.form("health_form"):
         dietary_preference = st.selectbox("Dietary Preference", ["Veg", "Non-Veg", "Vegan"])
         st.markdown("<div style='height:28px'></div>", unsafe_allow_html=True)
         submit_btn = st.form_submit_button("Generate Health Plan")
-
-st.markdown("</div></div>", unsafe_allow_html=True)  # Close card and flex
+st.markdown("</div>", unsafe_allow_html=True)
 
 # === Agent Initialization ===
 def init_agents(api_key):
@@ -169,7 +235,7 @@ if submit_btn and default_api_key:
         st.markdown(f"<div style='color:#b94a48; background:#f8d7da; border-radius:8px; padding:0.8rem 1rem; margin-bottom:0.5rem;'><b>Error occurred:</b> {str(e)}</div>", unsafe_allow_html=True)
         st.markdown("<div style='color:#555; background:#e2e3e5; border-radius:8px; padding:0.8rem 1rem;'><b>Please ensure:</b> 1) Valid API key in .env 2) Stable internet connection 3) Correct input values</div>", unsafe_allow_html=True)
 
-# === Results Display ===
+# === Results Display (Redesigned) ===
 if st.session_state.conversation:
     st.markdown("---")
     st.markdown("### Health Plan Generation Process")
@@ -182,7 +248,7 @@ if st.session_state.conversation:
     st.markdown("## 🌟 Your Complete Health Plan")
 
     if st.session_state.final_plan:
-        st.markdown(st.session_state.final_plan)
+        st.markdown(f"<div class='result-box'>{st.session_state.final_plan}</div>", unsafe_allow_html=True)
         st.download_button(
             label="⬇️ Download Health Plan",
             data=st.session_state.final_plan,
@@ -194,9 +260,11 @@ if st.session_state.conversation:
 
 elif not submit_btn:
     st.markdown("---")
-    st.info("""
-    **Instructions:**
-    1. Fill in your health details
-    2. Click **Generate Health Plan**
-    3. View your personalized recommendations
-    """)
+    st.info(
+        """
+        **Instructions:**
+        1. Fill in your health details
+        2. Click **Generate Health Plan**
+        3. View your personalized recommendations
+        """
+    )
